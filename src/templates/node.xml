@@ -1,0 +1,14 @@
+<Shape ID='1' Type='Foreign' Master='1'>
+	<Cell N='PinX'/>
+	<Cell N='PinY'/>
+	<Cell N='Relationships' V='0'/>
+	<Cell N='TxtWidth' V='10' />
+	<Cell N='LayerMember' V='1'/>
+	<Text></Text>
+	<Section N='Character'>
+		<Row IX='0'>
+			<Cell N='Color' V='#000000' F='THEMEGUARD(RGB(0,0,0))'/>
+			<Cell N='Size'/>
+		</Row>
+	</Section>
+</Shape>
