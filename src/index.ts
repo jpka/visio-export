@@ -1,6 +1,7 @@
 import JSZip from "jszip"
 import * as JSZipUtils from "jszip-utils"
 import saveAs from 'file-saver';
+import path from 'path'
 
 const pageW = 8.5;
 const pageH = 5.8;
@@ -8,14 +9,14 @@ const padding = 150;
 const groupPadding = 1;
 
 const nodeImages = {
-	'Graphics/WANCloud.png': '11',
-	'Graphics/cloud.png': '11',
-	'Graphics/Router.png': '14',
-	'Graphics/Server.png': '15',
-	'Graphics/Switch.png': '16',
-	'Graphics/AccessPoint.png': '17',
-	'Graphics/Firewall.png': '18',
-	'Graphics/MultilayerSwitch.png': '19',
+	'WANCloud': '11',
+	'cloud': '11',
+	'Router': '14',
+	'Server': '15',
+	'Switch': '16',
+	'AccessPoint': '17',
+	'Firewall': '18',
+	'MultilayerSwitch': '19',
 };
 
 const getGroupData = (nodes) => {
@@ -53,13 +54,14 @@ export async function generate({nodes = [], edges = [], groups = []}: any, fileN
 	// console.log('template', template);
 
 
-	nodes = nodes.map(({x, y, ...node}, i) => ({
+	nodes = nodes.map(({x, y, image, ...node}, i) => ({
 		...node,
 		id: i + 2,
 		// x: pageW * (x + shiftX) / drawing.w,
 		// y: pageH * (pageH - y + shiftY) / drawing.h,
 		x: 0.8 * (x + shiftX) / 50,
-		y: -0.8 * (y + shiftY) / 50
+		y: -0.8 * (y + shiftY) / 50,
+		image: path.basename(image).split(".")[0],
 	}));
 	const getNodeId = ({name}) => nodes.find(n => n.name === name).id;
 	const getGroupId = (groupI) => nodes.length + edges.length + (groupI * 10) + 2;
@@ -103,7 +105,7 @@ export async function generate({nodes = [], edges = [], groups = []}: any, fileN
 				.replace(`<Cell N='PinY'/>`, `<Cell N='PinY' V='${y}'/>`)
 				.replace(`Master='1'`, `Master='${nodeImages[image]}'`)
 				.replace('<Text></Text>', `<Text>${
-					image === 'Graphics/WANCloud.png'
+					image === 'WANCloud'
 					?
 					'WAN'
 					:
@@ -117,7 +119,8 @@ export async function generate({nodes = [], edges = [], groups = []}: any, fileN
 					// :
 					''
 				)
-				.replace(`<Cell N='Size'/>`, isCloud ? `<Cell N='Size' V='0.194444'/>` : '')
+				.replace(`<Cell N='Size'/>`, isCloud ? (image === 'WANCloud' ? `<Cell N='Size' V='0.3333333333333333'/><Cell N='Style' V='17'/>` : `<Cell N='Size' V='0.194444'/>`) : '')
+				.replace(`<Cell N='TxtWidth' V='10' />`, image === 'WANCloud' ? `<Cell N='TxtLocPinY' V='0.1'/><Cell N='TxtWidth' V='10' />`: `<Cell N='TxtWidth' V='10' />`)
 			).join('\n')}
 			</Shapes>
 			<Connects>
