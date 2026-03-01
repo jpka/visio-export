@@ -1,5 +1,4 @@
 import JSZip from "jszip"
-import * as JSZipUtils from "jszip-utils"
 import saveAs from 'file-saver';
 import path from 'path'
 
@@ -19,7 +18,16 @@ const nodeImages = {
 	'MultilayerSwitch': '19',
 };
 
-const getGroupData = (nodes) => {
+const getGroupData = (nodes: any[]) => {
+	if (nodes.length === 0) {
+		return {
+			extremes: { x: [0, 0], y: [0, 0] },
+			w: 0,
+			h: 0,
+			shiftX: 0,
+			shiftY: 0
+		};
+	}
 	const extremes = nodes.reduce(
 		(acc, n) => ({
 			x: [Math.min(acc.x[0], n.x), Math.max(acc.x[1], n.x)], 
@@ -47,7 +55,11 @@ export async function generate({nodes = [], edges = [], groups = []}: any, fileN
 	// console.log('shape', nodeTmpl);
 
 	const zip = await JSZip.loadAsync(templateZip);
-	const template = await zip.file("visio/pages/page1.xml").async("text");
+	const pageFile = zip.file("visio/pages/page1.xml");
+	if (!pageFile) {
+		throw new Error("Could not find visio/pages/page1.xml in template");
+	}
+	const template = await pageFile.async("text");
 	const drawing = getGroupData(nodes);
 	const { shiftX, shiftY } = drawing;
 	// console.log("drawing data", drawing);
@@ -63,7 +75,13 @@ export async function generate({nodes = [], edges = [], groups = []}: any, fileN
 		y: -0.8 * (y + shiftY) / 50,
 		image: path.basename(image).split(".")[0],
 	}));
-	const getNodeId = ({name}) => nodes.find(n => n.name === name).id;
+	const getNodeId = ({name}: any) => {
+		const node = nodes.find(n => n.name === name);
+		if (!node) {
+			throw new Error(`Could not find node with name ${name}`);
+		}
+		return node.id;
+	};
 	const getGroupId = (groupI) => nodes.length + edges.length + (groupI * 10) + 2;
 	const xml = template
 		.replace(`<Shapes></Shapes>`, `<Shapes>

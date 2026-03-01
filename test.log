@@ -1,0 +1,17 @@
+
+> visio-export@1.0.0 test
+> jest
+
+FAIL __tests__/generate.test.ts
+  ● Test suite failed to run
+
+    [96msrc/index.ts[0m:[93m49[0m:[93m25[0m - [91merror[0m[90m TS2531: [0mObject is possibly 'null'.
+
+    [7m49[0m  const template = await zip.file("visio/pages/page1.xml").async("text");
+    [7m  [0m [91m                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+Test Suites: 1 failed, 1 total
+Tests:       0 total
+Snapshots:   0 total
+Time:        3.01 s
+Ran all test suites.
